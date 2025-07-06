@@ -29,6 +29,12 @@
 
 ---
 
+### 🎯 **Objectif de ce dépôt.**
+
+> Ce dépôt regroupe les notions essentielles sur SSH. Que vous soyez un passionné, un étudiant ou un professionnel, vous y trouverez de quoi comprendre cet outil de sécurité > fondamental, apprendre à le configurer efficacement et maîtriser les bonnes pratiques pour garantir la performance et la stabilité de vos systèmes face aux menaces.
+
+---
+
 <h1 align="center"> 🚧 **Page en cours de développement** 🚧</h1>
 <h3 align="center"> 🔧 Travail en cours... Merci de revenir plus tard !</h3>
 
