@@ -34,20 +34,47 @@
 
 ---
 
-<h1 align="center"> 🚧 **Page en cours de développement** 🚧</h1>
-<h3 align="center"> 🔧 Travail en cours... Merci de revenir plus tard !</h3>
+# Le protocole SSH
+
+## Qu’est-ce que SSH ?
+
+**SSH** (Secure Shell) est un protocole réseau permettant d'établir une connexion sécurisée entre un client et un serveur, principalement pour administrer des systèmes à distance.
 
 ---
 
-<h2 align="left">💡</h2>
-<h3 align="left">👋 </h3>
+## Objectifs principaux de SSH :
 
-- 
-- 
--
-- 
-- 
--
+- **Sécurité** : chiffrer toutes les communications pour éviter l’espionnage.
+- **Authentification** : vérifier l’identité du client (et parfois du serveur).
+- **Intégrité** : garantir que les données échangées ne sont pas altérées.
+- **Confidentialité** : empêcher les interceptions et accès non autorisés.
+
+---
+
+## Comment fonctionne SSH ?
+
+1. **Établissement de la connexion**  
+   Le client contacte le serveur SSH sur le port par défaut **22**.
+
+2. **Négociation cryptographique**  
+   Le client et le serveur s'accordent sur les algorithmes de chiffrement, de hachage et d’échange de clés.
+
+3. **Authentification**  
+   Le client s’authentifie via :
+   - Un mot de passe,
+   - Ou plus sécurisé : une **clé publique/clé privée** (authentification par clé SSH).
+
+4. **Session sécurisée**  
+   Toutes les données échangées (commandes, fichiers) sont chiffrées.
+
+---
+
+## Les avantages de SSH :
+
+- **Sécurité renforcée** par rapport à des protocoles comme Telnet (non chiffré).
+- **Multiples usages** : administration distante, transfert de fichiers (SCP, SFTP), tunnels sécurisés.
+- **Authentification par clé publique** qui supprime le besoin de mot de passe.
+- **Support sur tous les systèmes Unix/Linux** et sur Windows avec des clients compatibles.
 
 ---
 
