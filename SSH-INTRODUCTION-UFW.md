@@ -34,7 +34,7 @@
 
 ---
 
-# 🔥 Guide Pédagogique : Configurer un pare‑feu local avec **UFW** sur **Debian 12**
+# 🔥 Configurer un pare‑feu local avec **UFW** sur **Debian 12**
 
 ---
 
