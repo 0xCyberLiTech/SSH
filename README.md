@@ -34,6 +34,32 @@
 
 ---
 
+### 🧭 **Sommaire :**
+
+---
+
+<div align="center" style="margin-bottom: 10px;">
+
+Légende des couleurs des boutons :
+
+🟢 **Actif** – Dépôt totalement accessible  
+🟠 **Partiel** – Dépôt partiellement accessible  
+🔴 **Inactif** – Dépôt inaccessible ou indisponible
+
+</div>
+
+---
+
+<div align="center">
+
+| Catégorie | Sujet | Accès Rapide |
+|:---:|:---|:---:|
+| **SSH** | Plus en détail, qu’est-ce que SSH.| [<img src="https://img.shields.io/badge/EXPLORER-brightgreen?style=for-the-badge&logo=github&logoColor=white">](GRAYLOG-INSTALLATION-CONFIGURATION-DEBIAN-12.md) |
+
+</div>
+
+---
+
 # Le protocole SSH
 
 ## Qu’est-ce que SSH ?
