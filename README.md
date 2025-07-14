@@ -9,6 +9,8 @@
   <b>📘 Apprentissage – 🔐 Sécurité – 🧠 Compréhension</b>
 </p>
 
+[![Dernière version](https://img.shields.io/github/v/release/0xCyberLiTech/SSH?style=flat-square&color=blue)](https://github.com/0xCyberLiTech/SSH/releases/latest)
+
 </div>
 
 ---
