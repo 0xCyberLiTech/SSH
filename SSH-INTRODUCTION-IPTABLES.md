@@ -225,3 +225,8 @@ Ce script peut être rendu exécutable via `chmod +x firewall.sh`, puis lancé a
 
 ---
 
+---
+
+<p align="center">
+  🔒 Un guide proposé par <a href="https://github.com/0xCyberLiTech">0xCyberLiTech</a> • Pour des tutoriels accessible à tous.
+</p>
