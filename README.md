@@ -10,6 +10,7 @@
 </p>
 
 [![Dernière version](https://img.shields.io/github/v/release/0xCyberLiTech/SSH?style=flat-square&color=blue)](https://github.com/0xCyberLiTech/SSH/releases/latest)
+![GitHub repo size](https://img.shields.io/github/repo-size/0xCyberLiTech/SSH?color=blue&label=Repo%20Size&logo=github)
 
 </div>
 
