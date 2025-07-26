@@ -9,11 +9,11 @@
     <b>📘 Apprentissage – 🔐 Sécurité – 🧠 Compréhension</b>
   </p>
 
-   [![🔗 Profil GitHub](https://img.shields.io/badge/Profil-GitHub-181717?logo=github&style=flat-square)](https://github.com/0xCyberLiTech)
-  [![📦 Dernière version](https://img.shields.io/github/v/release/0xCyberLiTech/CRYPTOGRAPHIE?label=version&style=flat-square&color=blue)](https://github.com/0xCyberLiTech/CRYPTOGRAPHIE/releases/latest)
-  [![📄 CHANGELOG](https://img.shields.io/badge/📄%20Changelog-CRYPTOGRAPHIE-blue?style=flat-square)](https://github.com/0xCyberLiTech/CRYPTOGRAPHIE/blob/main/CHANGELOG.md)
+  [![🔗 Profil GitHub](https://img.shields.io/badge/Profil-GitHub-181717?logo=github&style=flat-square)](https://github.com/0xCyberLiTech)
+  [![📦 Dernière version](https://img.shields.io/github/v/release/0xCyberLiTech/SSH?label=version&style=flat-square&color=blue)](https://github.com/0xCyberLiTech/SSH/releases/latest)
+  [![📄 CHANGELOG](https://img.shields.io/badge/📄%20Changelog-SSH-blue?style=flat-square)](https://github.com/0xCyberLiTech/SSH/blob/main/CHANGELOG.md)
   [![📂 Dépôts publics](https://img.shields.io/badge/Dépôts-publics-blue?style=flat-square)](https://github.com/0xCyberLiTech?tab=repositories)
-  [![👥 Contributeurs](https://img.shields.io/badge/👥%20Contributeurs-cliquez%20ici-007ec6?style=flat-square)](https://github.com/0xCyberLiTech/CRYPTOGRAPHIE/graphs/contributors)
+  [![👥 Contributeurs](https://img.shields.io/badge/👥%20Contributeurs-cliquez%20ici-007ec6?style=flat-square)](https://github.com/0xCyberLiTech/SSH/graphs/contributors)
 
 </div>
 
