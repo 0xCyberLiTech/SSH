@@ -64,8 +64,6 @@ Le contenu est structuré, accessible et optimisé SEO pour répondre aux besoin
 
 # 🔒 Résumé Complet : `iptables` pour la Sécurité Linux
 
----
-
 ## 🔗 Qu'est-ce que `iptables` ?
 
 `iptables` est un outil en ligne de commande sous Linux qui permet de :
