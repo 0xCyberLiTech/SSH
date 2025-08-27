@@ -254,5 +254,11 @@ Ce script peut être rendu exécutable via `chmod +x firewall.sh`, puis lancé a
 ---
 
 <p align="center">
+  <a href="https://github.com/0xCyberLiTech" target="_blank" rel="noopener">
+    <img src="https://skillicons.dev/icons?i=linux,debian,bash,docker,nginx,git,vim,python,markdown" alt="Skills" width="420">
+  </a>
+</p>
+
+<p align="center">
   🔒 Un guide proposé par <a href="https://github.com/0xCyberLiTech">0xCyberLiTech</a> • Pour des tutoriels accessible à tous.
 </p>
