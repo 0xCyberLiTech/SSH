@@ -245,8 +245,6 @@ iptables -A OUTPUT -p tcp --sport 54321 -d 203.0.113.42 -m state --state ESTABLI
 iptables -A INPUT -j LOG --log-prefix "[IPTABLES BLOCK] " --log-level 4
 ```
 
----
-
 Ce script peut être rendu exécutable via `chmod +x firewall.sh`, puis lancé avec `sudo ./firewall.sh`.
 
 ---
