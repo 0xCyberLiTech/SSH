@@ -34,7 +34,7 @@
 </div>
 
 <!--
-Optimisation SEO : mots-clés cybersécurité, Linux, administration système, sécurité informatique, tutoriels, guides, expertise, formation, supervision, Docker, OpenVAS, firewall, proxy, DNS, SSH, Debian, IT, réseau, cryptographie, open source, ressources techniques, étudiants, professionnels, passionnés.
+Optimisation SEO : astuces, cybersécurité, Linux, sécurité informatique, tutoriels, guides, administration système, scripts Bash, Debian, cryptographie, cryptographie symétrique, clé, chiffrer, clé public, clé privée, clé rsa, clé dsa, ssh, chiffrement, déchiffrer, cryptographie asymétrique, log, ressources techniques, étudiants, professionnels, formation, réseau, IT, bonnes pratiques, passionnés.
 -->
 
 <div align="center">
