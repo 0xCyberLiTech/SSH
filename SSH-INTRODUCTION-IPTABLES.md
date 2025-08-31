@@ -62,190 +62,227 @@ Le contenu est structuré, accessible et optimisé SEO pour répondre aux besoin
 
 ---
 
-# 🔒 Résumé Complet : `iptables` pour la Sécurité Linux
+# 🔐 TP SSH — Installation, Configuration et Utilisation
 
-## 🔗 Qu'est-ce que `iptables` ?
-
-`iptables` est un outil en ligne de commande sous Linux qui permet de :
-- Contrôler le trafic réseau entrant, sortant et transitant.
-- Appliquer des règles de sécurité sur les connexions.
-- Créer un pare-feu robuste adapté aux besoins de l'administrateur.
-
----
-
-## 🛠️ Structure de base
-
-```bash
-iptables -A [chaîne] [filtres] -j [action]
-```
-
-| Option        | Description                              |
-|---------------|------------------------------------------|
-| `-A`          | Ajoute une règle à une chaîne            |
-| `-p`          | Protocole concerné (tcp, udp, icmp)       |
-| `--dport`     | Port de destination                      |
-| `-s` / `-d`   | IP source / destination                  |
-| `-j`          | Action : `ACCEPT`, `DROP`, `REJECT`, etc |
+## 📑 Sommaire
+- [Introduction](#-introduction)
+- [Chapitre 1 : Installation et Configuration](#-chapitre-1--installation-et-configuration)
+  - [1. Installation du serveur SSH](#-1-installation-du-serveur-ssh)
+  - [2. Fichiers de configuration](#-2-fichiers-de-configuration)
+  - [3. Exemple de configuration de base](#-3-exemple-de-configuration-de-base)
+  - [4. Exemple de configuration avancée](#-4-exemple-de-configuration-avancée)
+  - [5. Mise en place de clés SSH](#-5-mise-en-place-de-clés-ssh)
+  - [6. Sécurisation supplémentaire](#-6-sécurisation-supplémentaire)
+- [Chapitre 2 : Utilisation pratique de SSH et SCP](#-chapitre-2--utilisation-pratique-de-ssh-et-scp)
+  - [1. Connexion à un serveur](#-1-connexion-à-un-serveur)
+  - [2. Exécuter une commande distante](#-2-exécuter-une-commande-distante)
+  - [3. Transfert de fichiers avec scp](#-3-transfert-de-fichiers-avec-scp)
+  - [4. Synchronisation efficace avec rsync](#-4-synchronisation-efficace-avec-rsync)
+  - [5. Tunnel SSH](#-5-tunnel-ssh-redirection-de-port)
+  - [6. Utilisation d’une clé privée](#-6-utilisation-dune-clé-privée)
+- [Récapitulatif des commandes](#-récapitulatif-des-commandes)
+- [Conclusion](#-conclusion)
 
 ---
 
-## 📊 Chaînes principales
+# 🔐 TP SSH — Installation, Configuration et Utilisation
 
-| Chaîne    | Rôle                                      |
-|-----------|--------------------------------------------|
-| `INPUT`   | Trafic entrant vers la machine              |
-| `OUTPUT`  | Trafic sortant depuis la machine            |
-| `FORWARD` | Trafic traversant la machine (routeur)      |
+## 📖 Introduction
+SSH (**Secure Shell**) est un protocole permettant :
+- La connexion sécurisée à distance à une machine (administration système).
+- Le transfert de fichiers chiffrés (`scp`, `sftp`).
+- La mise en place de tunnels sécurisés.
 
----
-
-## 📁 Tables principales
-
-| Table     | Usage                                      |
-|-----------|--------------------------------------------|
-| `filter`  | Filtrage des paquets (par défaut)           |
-| `nat`     | Redirection/NAT des connexions              |
-| `mangle`  | Modification de paquets (TTL, marquage...)  |
+Il fonctionne par défaut sur le **port 22** mais peut être configuré différemment.
 
 ---
 
-## 🔧 Exemples de règles commentées
+# 📌 Chapitre 1 : Installation et Configuration
 
-### Autoriser loopback (localhost)
-```bash
-iptables -A INPUT -i lo -j ACCEPT
-```
+## 🟢 1. Installation du serveur SSH
 
-### Politique par défaut stricte
-```bash
-iptables -P INPUT DROP
-iptables -P FORWARD DROP
-iptables -P OUTPUT ACCEPT
-```
+### Sur Debian / Ubuntu
+\`\`\`bash
+sudo apt update && sudo apt install -y openssh-server
+\`\`\`
 
-### Autoriser ping (ICMP)
-```bash
-iptables -A INPUT -p icmp --icmp-type echo-request -j ACCEPT
-```
+### Vérifier le statut du service
+\`\`\`bash
+systemctl status ssh
+\`\`\`
+- \`active (running)\` → SSH est en marche.
+- Pour activer au démarrage :
+\`\`\`bash
+sudo systemctl enable --now ssh
+\`\`\`
 
-### Autoriser SSH (port 22)
-```bash
-iptables -A INPUT -p tcp --dport 22 -m state --state NEW,ESTABLISHED -j ACCEPT
-iptables -A OUTPUT -p tcp --sport 22 -m state --state ESTABLISHED -j ACCEPT
-```
-
-### Autoriser HTTP/HTTPS
-```bash
-iptables -A INPUT -p tcp -m multiport --dports 80,443 -m state --state NEW,ESTABLISHED -j ACCEPT
-iptables -A OUTPUT -p tcp -m multiport --sports 80,443 -m state --state ESTABLISHED -j ACCEPT
-```
-
-### Autoriser une IP WAN à accéder à un port spécifique
-```bash
-iptables -A INPUT -p tcp -s 203.0.113.42 --dport 54321 -m state --state NEW,ESTABLISHED -j ACCEPT
-iptables -A OUTPUT -p tcp --sport 54321 -d 203.0.113.42 -m state --state ESTABLISHED -j ACCEPT
-```
-
-### Bloquer les autres connexions sur ce port
-```bash
-iptables -A INPUT -p tcp --dport 54321 -j DROP
-```
+### Sur RedHat / CentOS / Fedora
+\`\`\`bash
+sudo dnf install -y openssh-server
+sudo systemctl enable --now sshd
+\`\`\`
 
 ---
 
-## 🛡️ Limiter les connexions (anti-brute-force)
+## 🟠 2. Fichiers de configuration
 
-### Limiter SSH à 3 tentatives par minute (module `recent`)
-```bash
-iptables -A INPUT -p tcp --dport 22 -m state --state NEW -m recent --set --name SSH
-iptables -A INPUT -p tcp --dport 22 -m state --state NEW -m recent --update --seconds 60 --hitcount 3 --name SSH -j DROP
-```
+Fichier principal :
+\`\`\`bash
+/etc/ssh/sshd_config
+\`\`\`
 
-### Blocage temporaire avec TTL
-```bash
-iptables -A INPUT -p tcp --dport 22 -m recent --set --name SSH
-iptables -A INPUT -p tcp --dport 22 -m recent --update --seconds 60 --hitcount 5 --rttl --name SSH -j DROP
-```
+| Paramètre | Rôle | Exemple |
+|-----------|------|---------|
+| \`Port\` | Définit le port SSH | \`Port 2222\` |
+| \`PermitRootLogin\` | Autorise/refuse connexion root | \`PermitRootLogin no\` |
+| \`PasswordAuthentication\` | Active/désactive mot de passe | \`PasswordAuthentication no\` |
+| \`AllowUsers\` | Liste d’utilisateurs autorisés | \`AllowUsers user1 user2\` |
+| \`AllowGroups\` | Restreint l’accès aux groupes | \`AllowGroups admins\` |
 
-### Limite de 3 connexions par minute avec `hashlimit`
-```bash
-iptables -A INPUT -p tcp --dport 22 -m hashlimit --hashlimit 3/min --hashlimit-burst 3 \
---hashlimit-mode srcip --hashlimit-name ssh_limit -j ACCEPT
-iptables -A INPUT -p tcp --dport 22 -j DROP
-```
-
----
-
-## 💾 Sauvegarde et nettoyage
-
-### Sauvegarder les règles (Debian/Ubuntu)
-```bash
-sudo apt install iptables-persistent
-iptables-save > /etc/iptables/rules.v4
-```
-
-### Nettoyer les règles
-```bash
-iptables -F
-iptables -X
-iptables -t nat -F
-```
+⚠️ Après modification :
+\`\`\`bash
+sudo systemctl restart ssh
+\`\`\`
 
 ---
 
-## ✅ Bonnes pratiques
-
-- Toujours tester dans une session SSH secondaire.
-- Documenter chaque règle dans un script.
-- Utiliser `iptables -L -v -n --line-numbers` pour vérifier les règles.
-- Pour activer les logs :
-  ```bash
-  iptables -A INPUT -j LOG --log-prefix "iptables INPUT DROP: " --log-level 4
-  ```
+## 🟡 3. Exemple de configuration de base
+\`\`\`conf
+Port 2222
+PermitRootLogin no
+PasswordAuthentication yes
+AllowUsers user
+\`\`\`
 
 ---
 
-## 📜 Exemple de script iptables complet (pare-feu personnel de base)
+## 🔴 4. Exemple de configuration avancée
+\`\`\`conf
+Port 2222
+PermitRootLogin no
+PasswordAuthentication no
+PubkeyAuthentication yes
+AllowGroups admins
+MaxAuthTries 3
+LoginGraceTime 30
+ClientAliveInterval 300
+ClientAliveCountMax 2
+\`\`\`
 
-```bash
-#!/bin/bash
+---
 
-# Nettoyage des règles existantes
-iptables -F
-iptables -X
-iptables -t nat -F
+## 🔑 5. Mise en place de clés SSH
 
-# Politique par défaut
-iptables -P INPUT DROP
-iptables -P FORWARD DROP
-iptables -P OUTPUT ACCEPT
+### Générer une clé sur le client
+\`\`\`bash
+ssh-keygen -t rsa -b 4096 -C "user@pc"
+\`\`\`
 
-# Autoriser loopback
-iptables -A INPUT -i lo -j ACCEPT
+### Copier la clé sur le serveur
+\`\`\`bash
+ssh-copy-id -p 2222 user@192.168.1.10
+\`\`\`
 
-# Autoriser connexions établies
-iptables -A INPUT -m state --state ESTABLISHED,RELATED -j ACCEPT
+### Connexion sans mot de passe
+\`\`\`bash
+ssh -p 2222 user@192.168.1.10
+\`\`\`
 
-# Autoriser SSH (limité à 3 tentatives/min par IP)
-iptables -A INPUT -p tcp --dport 22 -m state --state NEW -m recent --set --name SSH
-iptables -A INPUT -p tcp --dport 22 -m state --state NEW -m recent --update --seconds 60 --hitcount 3 --name SSH -j DROP
-iptables -A INPUT -p tcp --dport 22 -m state --state NEW,ESTABLISHED -j ACCEPT
-iptables -A OUTPUT -p tcp --sport 22 -m state --state ESTABLISHED -j ACCEPT
+---
 
-# HTTP/HTTPS
-iptables -A INPUT -p tcp -m multiport --dports 80,443 -m state --state NEW,ESTABLISHED -j ACCEPT
-iptables -A OUTPUT -p tcp -m multiport --sports 80,443 -m state --state ESTABLISHED -j ACCEPT
+## 🛡️ 6. Sécurisation supplémentaire
 
-# Exemple : accès restreint au port 54321 depuis IP WAN
-iptables -A INPUT -p tcp -s 203.0.113.42 --dport 54321 -m state --state NEW,ESTABLISHED -j ACCEPT
-iptables -A INPUT -p tcp --dport 54321 -j DROP
-iptables -A OUTPUT -p tcp --sport 54321 -d 203.0.113.42 -m state --state ESTABLISHED -j ACCEPT
+### Fail2ban (bloquer les IP malveillantes)
+\`\`\`bash
+sudo apt install fail2ban
+\`\`\`
 
-# Logging optionnel
-iptables -A INPUT -j LOG --log-prefix "[IPTABLES BLOCK] " --log-level 4
-```
+### Firewall (UFW)
+\`\`\`bash
+sudo ufw allow 2222/tcp
+sudo ufw enable
+\`\`\`
 
-Ce script peut être rendu exécutable via `chmod +x firewall.sh`, puis lancé avec `sudo ./firewall.sh`.
+---
+
+# 📌 Chapitre 2 : Utilisation pratique de SSH et SCP
+
+## 🟢 1. Connexion à un serveur
+\`\`\`bash
+ssh user@192.168.1.10
+\`\`\`
+
+---
+
+## 🟠 2. Exécuter une commande distante
+\`\`\`bash
+ssh user@192.168.1.10 "uptime"
+\`\`\`
+
+---
+
+## 🟡 3. Transfert de fichiers avec scp
+
+### Local → Distant
+\`\`\`bash
+scp fichier.txt user@192.168.1.10:/home/user/
+\`\`\`
+
+### Distant → Local
+\`\`\`bash
+scp user@192.168.1.10:/home/user/log.txt ./log.txt
+\`\`\`
+
+### Copier un dossier entier
+\`\`\`bash
+scp -r sauvegarde/ user@192.168.1.10:/home/user/backups/
+\`\`\`
+
+---
+
+## 🔵 4. Synchronisation efficace avec rsync
+\`\`\`bash
+rsync -avz projet/ user@192.168.1.10:/home/user/projets/
+\`\`\`
+
+---
+
+## 🔴 5. Tunnel SSH (redirection de port)
+\`\`\`bash
+ssh -L 8080:localhost:80 user@192.168.1.10
+\`\`\`
+
+---
+
+## 🟣 6. Utilisation d’une clé privée
+\`\`\`bash
+ssh -i ~/.ssh/id_rsa user@192.168.1.10
+\`\`\`
+
+---
+
+# 📌 Récapitulatif des commandes
+
+| Action | Commande | Exemple |
+|--------|----------|---------|
+| Connexion simple | \`ssh user@ip\` | \`ssh user@192.168.1.10\` |
+| Connexion avec port | \`ssh -p 2222 user@ip\` | \`ssh -p 2222 user@192.168.1.10\` |
+| Exécuter une commande | \`ssh user@ip "cmd"\` | \`ssh user@192.168.1.10 "uptime"\` |
+| Copier fichier local → distant | \`scp fichier user@ip:/path/\` | \`scp notes.txt user@192.168.1.10:/home/user/\` |
+| Copier fichier distant → local | \`scp user@ip:/fichier /local/\` | \`scp user@192.168.1.10:/home/user/log.txt ./\` |
+| Copier dossier | \`scp -r dossier user@ip:/path/\` | \`scp -r sauvegarde/ user@192.168.1.10:/home/user/backups/\` |
+| Synchroniser | \`rsync -avz src user@ip:/path/\` | \`rsync -avz /var/www/ user@192.168.1.10:/home/user/www/\` |
+| Tunnel SSH | \`ssh -L port_local:localhost:port_distant user@ip\` | \`ssh -L 8080:localhost:80 user@192.168.1.10\` |
+| Copier clé publique | \`ssh-copy-id user@ip\` | \`ssh-copy-id user@192.168.1.10\` |
+
+---
+
+# ✅ Conclusion
+
+- **Chapitre 1** : Installation, configuration et sécurisation du serveur SSH.  
+- **Chapitre 2** : Utilisation pratique (connexion, commandes, transferts, tunnels).  
+
+👉 Avec cette base, tu peux administrer et sécuriser des serveurs Linux efficacement.
 
 ---
 
