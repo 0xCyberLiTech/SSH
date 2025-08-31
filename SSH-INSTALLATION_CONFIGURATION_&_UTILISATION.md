@@ -33,8 +33,9 @@
 
 </div>
 
-<!--
-Optimisation SEO : astuces, cybersécurité, Linux, sécurité informatique, tutoriels, guides, administration système, scripts Bash, Debian, cryptographie, cryptographie symétrique, clé, chiffrer, clé public, clé privée, clé rsa, clé dsa, ssh, chiffrement, déchiffrer, cryptographie asymétrique, log, ressources techniques, étudiants, professionnels, formation, réseau, IT, bonnes pratiques, passionnés.
+<!-- 
+Mots-clés SEO (optimisés) :
+SSH, Debian, configuration SSH sécurisée, durcissement SSH, audit SSH, surveillance connexions SSH, administration système, cybersécurité, hardening, OpenSSH, scripts Bash, tutoriel SSH, guide sysadmin, sécurité informatique, réseau sécurisés, bonnes pratiques SSH, authentification par clé publique, cryptographie, sécurité Linux.
 -->
 
 <div align="center">
