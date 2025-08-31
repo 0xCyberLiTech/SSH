@@ -64,99 +64,96 @@ Le contenu est structuré, accessible et optimisé SEO pour répondre aux besoin
 ---
 
 # 🔐 TP SSH — Installation, Configuration et Utilisation
+
 ## 📑 Sommaire
-- [Introduction](#-introduction)
-- [Chapitre 1 : Installation et Configuration](#-chapitre-1--installation-et-configuration)
-  - [1. Installation du serveur SSH](#-1-installation-du-serveur-ssh)
-  - [2. Fichiers de configuration](#-2-fichiers-de-configuration)
-  - [3. Exemple de configuration de base](#-3-exemple-de-configuration-de-base)
-  - [4. Exemple de configuration avancée](#-4-exemple-de-configuration-avancée)
-  - [5. Mise en place de clés SSH](#-5-mise-en-place-de-clés-ssh)
-  - [6. Sécurisation supplémentaire](#-6-sécurisation-supplémentaire)
-- [Chapitre 2 : Utilisation pratique de SSH et SCP](#-chapitre-2--utilisation-pratique-de-ssh-et-scp)
-  - [1. Connexion à un serveur](#-1-connexion-à-un-serveur)
-  - [2. Exécuter une commande distante](#-2-exécuter-une-commande-distante)
-  - [3. Transfert de fichiers avec scp](#-3-transfert-de-fichiers-avec-scp)
-  - [4. Synchronisation efficace avec rsync](#-4-synchronisation-efficace-avec-rsync)
-  - [5. Tunnel SSH](#-5-tunnel-ssh-redirection-de-port)
-  - [6. Utilisation d’une clé privée](#-6-utilisation-dune-clé-privée)
-- [Récapitulatif des commandes](#-récapitulatif-des-commandes)
-- [Conclusion](#-conclusion)
+- [Introduction](#introduction)
+- [Chapitre 1 : Installation et Configuration](#chapitre-1--installation-et-configuration)
+  - [1. Installation du serveur SSH](#1-installation-du-serveur-ssh)
+  - [2. Fichiers de configuration](#2-fichiers-de-configuration)
+  - [3. Exemple de configuration de base](#3-exemple-de-configuration-de-base)
+  - [4. Exemple de configuration avancée](#4-exemple-de-configuration-avancée)
+  - [5. Mise en place de clés SSH](#5-mise-en-place-de-clés-ssh)
+  - [6. Sécurisation supplémentaire](#6-sécurisation-supplémentaire)
+- [Chapitre 2 : Utilisation pratique de SSH et SCP](#chapitre-2--utilisation-pratique-de-ssh-et-scp)
+  - [1. Connexion à un serveur](#1-connexion-à-un-serveur)
+  - [2. Exécuter une commande distante](#2-exécuter-une-commande-distante)
+  - [3. Transfert de fichiers avec SCP](#3-transfert-de-fichiers-avec-scp)
+  - [4. Synchronisation avec Rsync](#4-synchronisation-avec-rsync)
+  - [5. Tunnel SSH](#5-tunnel-ssh)
+  - [6. Utilisation d’une clé privée](#6-utilisation-dune-clé-privée)
+- [Récapitulatif des commandes](#récapitulatif-des-commandes)
+- [Conclusion](#conclusion)
 
 ---
 
-# 🔐 TP SSH — Installation, Configuration et Utilisation
-## 📖 Introduction
-SSH (**Secure Shell**) est un protocole permettant :
-- La connexion sécurisée à distance à une machine (administration système).
-- Le transfert de fichiers chiffrés (`scp`, `sftp`).
-- La mise en place de tunnels sécurisés.
+## Introduction
 
-Il fonctionne par défaut sur le **port 22** mais peut être configuré différemment.
+**SSH (Secure Shell)** est un protocole permettant :  
+- Une **connexion sécurisée** à distance à une machine (administration système).  
+- Le **transfert de fichiers chiffrés** (`scp`, `sftp`).  
+- La création de **tunnels sécurisés** pour rediriger des services réseau.  
+
+Il fonctionne par défaut sur le **port 22**, mais il est recommandé de le changer pour limiter les attaques automatisées.
 
 ---
 
-# 📌 Chapitre 1 : Installation et Configuration
+# Chapitre 1 — Installation et Configuration
 
-## 🟢 1. Installation du serveur SSH
+## 1. Installation du serveur SSH
 
-### Sur Debian / Ubuntu
-\`\`\`bash
+### Debian / Ubuntu
+```bash
 sudo apt update && sudo apt install -y openssh-server
-\`\`\`
-
-### Vérifier le statut du service
-\`\`\`bash
-systemctl status ssh
-\`\`\`
-- \`active (running)\` → SSH est en marche.
-- Pour activer au démarrage :
-\`\`\`bash
 sudo systemctl enable --now ssh
-\`\`\`
+```
 
-### Sur RedHat / CentOS / Fedora
-\`\`\`bash
+### RedHat / CentOS / Fedora
+```bash
 sudo dnf install -y openssh-server
 sudo systemctl enable --now sshd
-\`\`\`
+```
+
+Vérifier que le service tourne :
+```bash
+systemctl status ssh
+```
 
 ---
 
-## 🟠 2. Fichiers de configuration
+## 2. Fichiers de configuration
 
-Fichier principal :
-\`\`\`bash
+Fichier principal :  
+```bash
 /etc/ssh/sshd_config
-\`\`\`
+```
 
 | Paramètre | Rôle | Exemple |
 |-----------|------|---------|
-| \`Port\` | Définit le port SSH | \`Port 2222\` |
-| \`PermitRootLogin\` | Autorise/refuse connexion root | \`PermitRootLogin no\` |
-| \`PasswordAuthentication\` | Active/désactive mot de passe | \`PasswordAuthentication no\` |
-| \`AllowUsers\` | Liste d’utilisateurs autorisés | \`AllowUsers user1 user2\` |
-| \`AllowGroups\` | Restreint l’accès aux groupes | \`AllowGroups admins\` |
+| `Port` | Définit le port SSH | `Port 2222` |
+| `PermitRootLogin` | Autorise/refuse root | `PermitRootLogin no` |
+| `PasswordAuthentication` | Active/désactive les mots de passe | `PasswordAuthentication no` |
+| `AllowUsers` | Utilisateurs autorisés | `AllowUsers admin user1` |
+| `AllowGroups` | Groupes autorisés | `AllowGroups admins` |
 
-⚠️ Après modification :
-\`\`\`bash
+⚠️ Après modification :  
+```bash
 sudo systemctl restart ssh
-\`\`\`
+```
 
 ---
 
-## 🟡 3. Exemple de configuration de base
-\`\`\`conf
+## 3. Exemple de configuration de base
+```conf
 Port 2222
 PermitRootLogin no
 PasswordAuthentication yes
-AllowUsers user
-\`\`\`
+AllowUsers admin
+```
 
 ---
 
-## 🔴 4. Exemple de configuration avancée
-\`\`\`conf
+## 4. Exemple de configuration avancée
+```conf
 Port 2222
 PermitRootLogin no
 PasswordAuthentication no
@@ -166,122 +163,132 @@ MaxAuthTries 3
 LoginGraceTime 30
 ClientAliveInterval 300
 ClientAliveCountMax 2
-\`\`\`
+```
+
+**Explication terrain** :  
+- `PasswordAuthentication no` → empêche les attaques par force brute.  
+- `PubkeyAuthentication yes` → authentification uniquement par clé publique.  
+- `MaxAuthTries 3` → limite les tentatives de connexion.  
 
 ---
 
-## 🔑 5. Mise en place de clés SSH
+## 5. Mise en place de clés SSH
 
 ### Générer une clé sur le client
-\`\`\`bash
-ssh-keygen -t rsa -b 4096 -C "user@pc"
-\`\`\`
+```bash
+ssh-keygen -t rsa -b 4096 -C "admin@pc"
+```
 
 ### Copier la clé sur le serveur
-\`\`\`bash
-ssh-copy-id -p 2222 user@192.168.1.10
-\`\`\`
+```bash
+ssh-copy-id -p 2222 admin@192.168.1.10
+```
 
 ### Connexion sans mot de passe
-\`\`\`bash
-ssh -p 2222 user@192.168.1.10
-\`\`\`
+```bash
+ssh -p 2222 admin@192.168.1.10
+```
 
 ---
 
-## 🛡️ 6. Sécurisation supplémentaire
+## 6. Sécurisation supplémentaire
 
-### Fail2ban (bloquer les IP malveillantes)
-\`\`\`bash
-sudo apt install fail2ban
-\`\`\`
+- **Fail2ban (bloquer les IP malveillantes)**
+  ```bash
+  sudo apt install fail2ban
+  ```
 
-### Firewall (UFW)
-\`\`\`bash
-sudo ufw allow 2222/tcp
-sudo ufw enable
-\`\`\`
-
----
-
-# 📌 Chapitre 2 : Utilisation pratique de SSH et SCP
-
-## 🟢 1. Connexion à un serveur
-\`\`\`bash
-ssh user@192.168.1.10
-\`\`\`
+- **Firewall UFW**
+  ```bash
+  sudo ufw allow 2222/tcp
+  sudo ufw enable
+  ```
 
 ---
 
-## 🟠 2. Exécuter une commande distante
-\`\`\`bash
-ssh user@192.168.1.10 "uptime"
-\`\`\`
+# Chapitre 2 — Utilisation pratique de SSH et SCP
+
+## 1. Connexion à un serveur
+```bash
+ssh admin@192.168.1.10
+```
 
 ---
 
-## 🟡 3. Transfert de fichiers avec scp
+## 2. Exécuter une commande distante
+```bash
+ssh admin@192.168.1.10 "uptime"
+```
+
+---
+
+## 3. Transfert de fichiers avec SCP
 
 ### Local → Distant
-\`\`\`bash
-scp fichier.txt user@192.168.1.10:/home/user/
-\`\`\`
+```bash
+scp fichier.txt admin@192.168.1.10:/home/admin/
+```
 
 ### Distant → Local
-\`\`\`bash
-scp user@192.168.1.10:/home/user/log.txt ./log.txt
-\`\`\`
+```bash
+scp admin@192.168.1.10:/home/admin/log.txt ./log.txt
+```
 
-### Copier un dossier entier
-\`\`\`bash
-scp -r sauvegarde/ user@192.168.1.10:/home/user/backups/
-\`\`\`
-
----
-
-## 🔵 4. Synchronisation efficace avec rsync
-\`\`\`bash
-rsync -avz projet/ user@192.168.1.10:/home/user/projets/
-\`\`\`
+### Copier un dossier
+```bash
+scp -r sauvegarde/ admin@192.168.1.10:/home/admin/backups/
+```
 
 ---
 
-## 🔴 5. Tunnel SSH (redirection de port)
-\`\`\`bash
-ssh -L 8080:localhost:80 user@192.168.1.10
-\`\`\`
+## 4. Synchronisation avec Rsync
+```bash
+rsync -avz projet/ admin@192.168.1.10:/home/admin/projets/
+```
 
 ---
 
-## 🟣 6. Utilisation d’une clé privée
-\`\`\`bash
-ssh -i ~/.ssh/id_rsa user@192.168.1.10
-\`\`\`
+## 5. Tunnel SSH
+Rediriger un port local vers un service distant :
+```bash
+ssh -L 8080:localhost:80 admin@192.168.1.10
+```
+👉 Permet d’accéder au port 80 du serveur via `http://localhost:8080`
 
 ---
 
-# 📌 Récapitulatif des commandes
+## 6. Utilisation d’une clé privée
+```bash
+ssh -i ~/.ssh/id_rsa admin@192.168.1.10
+```
+
+---
+
+# Récapitulatif des commandes
 
 | Action | Commande | Exemple |
 |--------|----------|---------|
-| Connexion simple | \`ssh user@ip\` | \`ssh user@192.168.1.10\` |
-| Connexion avec port | \`ssh -p 2222 user@ip\` | \`ssh -p 2222 user@192.168.1.10\` |
-| Exécuter une commande | \`ssh user@ip "cmd"\` | \`ssh user@192.168.1.10 "uptime"\` |
-| Copier fichier local → distant | \`scp fichier user@ip:/path/\` | \`scp notes.txt user@192.168.1.10:/home/user/\` |
-| Copier fichier distant → local | \`scp user@ip:/fichier /local/\` | \`scp user@192.168.1.10:/home/user/log.txt ./\` |
-| Copier dossier | \`scp -r dossier user@ip:/path/\` | \`scp -r sauvegarde/ user@192.168.1.10:/home/user/backups/\` |
-| Synchroniser | \`rsync -avz src user@ip:/path/\` | \`rsync -avz /var/www/ user@192.168.1.10:/home/user/www/\` |
-| Tunnel SSH | \`ssh -L port_local:localhost:port_distant user@ip\` | \`ssh -L 8080:localhost:80 user@192.168.1.10\` |
-| Copier clé publique | \`ssh-copy-id user@ip\` | \`ssh-copy-id user@192.168.1.10\` |
+| Connexion simple | `ssh user@ip` | `ssh admin@192.168.1.10` |
+| Connexion avec port | `ssh -p port user@ip` | `ssh -p 2222 admin@192.168.1.10` |
+| Commande distante | `ssh user@ip "cmd"` | `ssh admin@192.168.1.10 "uptime"` |
+| Copier fichier local → distant | `scp fichier user@ip:/path/` | `scp notes.txt admin@192.168.1.10:/home/admin/` |
+| Copier fichier distant → local | `scp user@ip:/fichier /local/` | `scp admin@192.168.1.10:/home/admin/log.txt ./` |
+| Copier dossier | `scp -r dossier user@ip:/path/` | `scp -r sauvegarde/ admin@192.168.1.10:/home/admin/backups/` |
+| Synchroniser | `rsync -avz src user@ip:/path/` | `rsync -avz /var/www/ admin@192.168.1.10:/home/admin/www/` |
+| Tunnel SSH | `ssh -L port_local:localhost:port_distant user@ip` | `ssh -L 8080:localhost:80 admin@192.168.1.10` |
+| Copier clé publique | `ssh-copy-id user@ip` | `ssh-copy-id admin@192.168.1.10` |
 
 ---
 
 # ✅ Conclusion
 
 - **Chapitre 1** : Installation, configuration et sécurisation du serveur SSH.  
-- **Chapitre 2** : Utilisation pratique (connexion, commandes, transferts, tunnels).  
+- **Chapitre 2** : Utilisation pratique (connexion, transferts, tunnels, automatisation).  
 
-👉 Avec cette base, tu peux administrer et sécuriser des serveurs Linux efficacement.
+👉 Avec cette base, un administrateur système peut :  
+- Gérer ses serveurs Linux à distance en toute sécurité.  
+- Automatiser des transferts et synchronisations fiables.  
+- Mettre en place un SSH renforcé contre les attaques courantes.  
 
 ---
 
