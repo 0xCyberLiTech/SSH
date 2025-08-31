@@ -64,7 +64,6 @@ Le contenu est structuré, accessible et optimisé SEO pour répondre aux besoin
 ---
 
 # 🔐 TP SSH — Installation, Configuration et Utilisation
-
 ## 📑 Sommaire
 - [Introduction](#-introduction)
 - [Chapitre 1 : Installation et Configuration](#-chapitre-1--installation-et-configuration)
@@ -87,7 +86,6 @@ Le contenu est structuré, accessible et optimisé SEO pour répondre aux besoin
 ---
 
 # 🔐 TP SSH — Installation, Configuration et Utilisation
-
 ## 📖 Introduction
 SSH (**Secure Shell**) est un protocole permettant :
 - La connexion sécurisée à distance à une machine (administration système).
