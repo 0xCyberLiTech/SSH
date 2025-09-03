@@ -34,8 +34,7 @@
 </div>
 
 <!-- 
-Mots-clés SEO (optimisés) :
-SSH, Debian, configuration SSH sécurisée, durcissement SSH, audit SSH, surveillance connexions SSH, administration système, cybersécurité, hardening, OpenSSH, scripts Bash, tutoriel SSH, guide sysadmin, sécurité informatique, réseau sécurisés, bonnes pratiques SSH, authentification par clé publique, cryptographie, sécurité Linux.
+Optimisation SEO : mots-clés SSH, 0xCyberLiTech, SSH, Debian, configuration SSH sécurisée, durcissement SSH, audit SSH, surveillance connexions SSH, administration système, cybersécurité, hardening, OpenSSH, scripts Bash, tutoriel SSH, guide sysadmin, sécurité informatique, réseau sécurisés, bonnes pratiques SSH, authentification par clé publique, cryptographie, sécurité Linux.
 -->
 
 <div align="center">
