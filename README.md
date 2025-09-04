@@ -33,10 +33,6 @@
 
 </div>
 
-<!-- 
-Optimisation SEO : mots-clés SSH, 0xCyberLiTech, SSH, Debian, configuration SSH sécurisée, durcissement SSH, audit SSH, surveillance connexions SSH, administration système, cybersécurité, hardening, OpenSSH, scripts Bash, tutoriel SSH, guide sysadmin, sécurité informatique, réseau sécurisés, bonnes pratiques SSH, authentification par clé publique, cryptographie, sécurité Linux.
--->
-
 <div align="center">
   <img src="https://img.icons8.com/fluency/96/000000/cyber-security.png" alt="CyberSec" width="80"/>
 </div>
@@ -137,3 +133,4 @@ Le contenu est structuré, accessible et optimisé SEO pour répondre aux besoin
 <div align="center">
   <b>🔒 Un guide proposé par <a href="https://github.com/0xCyberLiTech">0xCyberLiTech</a> • Pour des tutoriels accessibles à tous. 🔒</b>
 </div>
+
