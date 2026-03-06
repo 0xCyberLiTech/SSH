@@ -62,232 +62,230 @@ Le contenu est structuré, accessible et optimisé SEO pour répondre aux besoin
 
 ---
 
-# 🔐 TP SSH — Installation, Configuration et Utilisation
+# Connexion SSH — Windows (PowerShell) → Serveur Linux
 
-## 📑 Sommaire
-- [Introduction](#introduction)
-- [Chapitre 1 : Installation et Configuration](#chapitre-1--installation-et-configuration)
-  - [1. Installation du serveur SSH](#1-installation-du-serveur-ssh)
-  - [2. Fichiers de configuration](#2-fichiers-de-configuration)
-  - [3. Exemple de configuration de base](#3-exemple-de-configuration-de-base)
-  - [4. Exemple de configuration avancée](#4-exemple-de-configuration-avancée)
-  - [5. Mise en place de clés SSH](#5-mise-en-place-de-clés-ssh)
-  - [6. Sécurisation supplémentaire](#6-sécurisation-supplémentaire)
-- [Chapitre 2 : Utilisation pratique de SSH et SCP](#chapitre-2--utilisation-pratique-de-ssh-et-scp)
-  - [1. Connexion à un serveur](#1-connexion-à-un-serveur)
-  - [2. Exécuter une commande distante](#2-exécuter-une-commande-distante)
-  - [3. Transfert de fichiers avec SCP](#3-transfert-de-fichiers-avec-scp)
-  - [4. Synchronisation avec Rsync](#4-synchronisation-avec-rsync)
-  - [5. Tunnel SSH](#5-tunnel-ssh)
-  - [6. Utilisation d’une clé privée](#6-utilisation-dune-clé-privée)
-- [Récapitulatif des commandes](#récapitulatif-des-commandes)
-- [Conclusion](#conclusion)
+But : Générer une paire ed25519 sur le client Windows, charger la clé privée dans l'agent (passphrase saisie une seule fois), copier la clé publique sur le serveur et tester la connexion.
 
 ---
 
-## Introduction
+## 1) Générer la paire (PowerShell)
 
-**SSH (Secure Shell)** est un protocole permettant :  
-- Une **connexion sécurisée** à distance à une machine (administration système).  
-- Le **transfert de fichiers chiffrés** (`scp`, `sftp`).  
-- La création de **tunnels sécurisés** pour rediriger des services réseau.  
+Exécutez dans PowerShell (session utilisateur) :
 
-Il fonctionne par défaut sur le **port 22**, mais il est recommandé de le changer pour limiter les attaques automatisées.
+```powershell
+ssh-keygen -t ed25519 -C "srv-linux" -f "$env:USERPROFILE\.ssh\id_ed25519"
+```
+
+Quand on vous demande une passphrase, pour l'exemple pédagogique utilisez :
+
+```
+Jesuisenweekenddans6h00cestsuper
+```
+
+Remarque : c'est uniquement un exemple pédagogique — ne l'utilisez pas en production. Préférez une phrase unique, longue (>16 caractères) et stockée dans un gestionnaire de mots de passe.
 
 ---
 
-# Chapitre 1 — Installation et Configuration
+## 2) Démarrer l'agent SSH (option recommandée — nécessite élévation)
 
-## 1. Installation du serveur SSH
+Ouvrez PowerShell en Administrateur puis exécutez :
 
-### Debian / Ubuntu
-```bash
-sudo apt update && sudo apt install -y openssh-server
-sudo systemctl enable --now ssh
+```powershell
+Set-Service -Name ssh-agent -StartupType Automatic
+Start-Service ssh-agent
+Get-Service ssh-agent
 ```
 
-### RedHat / CentOS / Fedora
-```bash
-sudo dnf install -y openssh-server
-sudo systemctl enable --now sshd
-```
+Si vous obtenez “Accès refusé”, relancez PowerShell en tant qu’administrateur ou utilisez une alternative (voir 2b).
 
-Vérifier que le service tourne :
-```bash
-systemctl status ssh
-```
+### 2b) Alternatives si vous n'avez pas d'accès admin
+
+- Git Bash : ouvrez Git Bash ; l'agent SSH y fonctionne souvent sans configuration système.
+- Pageant (PuTTY) : convertir la clé en `.ppk` avec PuTTYgen puis charger dans Pageant.
 
 ---
 
-## 2. Fichiers de configuration
+## 3) Charger la clé privée dans l'agent (session utilisateur normale)
 
-Fichier principal :  
-```bash
-/etc/ssh/sshd_config
+Après démarrage du service (ou dans Git Bash / Pageant selon l'alternative) :
+
+```powershell
+ssh-add $env:USERPROFILE\.ssh\id_ed25519
+ssh-add -l
 ```
 
-| Paramètre | Rôle | Exemple |
-|-----------|------|---------|
-| `Port` | Définit le port SSH | `Port 2222` |
-| `PermitRootLogin` | Autorise/refuse root | `PermitRootLogin no` |
-| `PasswordAuthentication` | Active/désactive les mots de passe | `PasswordAuthentication no` |
-| `AllowUsers` | Utilisateurs autorisés | `AllowUsers admin user1` |
-| `AllowGroups` | Groupes autorisés | `AllowGroups admins` |
-
-⚠️ Après modification :  
-```bash
-sudo systemctl restart ssh
-```
+Vous saisissez la passphrase une seule fois ; `ssh-add -l` liste les clés chargées.
 
 ---
 
-## 3. Exemple de configuration de base
-```conf
-Port 2222
+## 4) Copier la clé publique vers le serveur (commande exécutée localement)
+
+Adaptez port/utilisateur/hôte si besoin :
+
+```powershell
+type $env:USERPROFILE\.ssh\id_ed25519.pub | ssh -p 2272 cyberlitech@192.168.1.250 "mkdir -p ~/.ssh && cat >> ~/.ssh/authorized_keys"
+```
+
+Cette commande crée/ajoute `~/.ssh/authorized_keys` à distance.
+
+---
+
+## 5) Tester la connexion depuis le client
+
+```powershell
+ssh -p 2272 cyberlitech@192.168.1.250
+```
+
+Si tout est correct, la connexion se fera sans mot de passe (sauf si la passphrase doit être saisie parce que la clé n'est pas chargée dans l'agent).
+
+---
+
+## 6) Vérifications sur le serveur (Linux — distant)
+
+Sur le serveur, corrigez permissions et propriétaire :
+
+```bash
+chmod 700 ~/.ssh
+chmod 600 ~/.ssh/authorized_keys
+chown -R cyberlitech:cyberlitech ~/.ssh
+```
+
+Vérifiez `sshd_config` (root) et rechargez si nécessaire :
+
+```bash
+sudo nano /etc/ssh/sshd_config   # vérifier PubkeyAuthentication yes, PasswordAuthentication no si souhaité
+sudo systemctl reload sshd
+```
+
+### Configuration recommandée et restriction d'accès par réseau
+
+Avant de remplacer ou vider `/etc/ssh/sshd_config`, sauvegardez le fichier existant et testez la syntaxe :
+
+```bash
+sudo cp /etc/ssh/sshd_config /etc/ssh/sshd_config.bak
+sudo sshd -t
+```
+
+Exemple de configuration prête à coller dans `/etc/ssh/sshd_config` (adapter le `Port` si nécessaire) :
+
+```text
+# Port d'écoute (adapter si non standard)
+Port 2272
+
+# Authentification
 PermitRootLogin no
-PasswordAuthentication yes
-AllowUsers admin
-```
-
----
-
-## 4. Exemple de configuration avancée
-```conf
-Port 2222
-PermitRootLogin no
-PasswordAuthentication no
 PubkeyAuthentication yes
-AllowGroups admins
-MaxAuthTries 3
-LoginGraceTime 30
+PasswordAuthentication no
+ChallengeResponseAuthentication no
+PermitEmptyPasswords no
+
+# Sécurité des fichiers et sessions
+StrictModes yes
+AllowAgentForwarding no
+AllowTcpForwarding no
+X11Forwarding no
+MaxAuthTries 6
+MaxSessions 4
+LoginGraceTime 2m
+
+# Options supplémentaires
+UsePAM yes
 ClientAliveInterval 300
 ClientAliveCountMax 2
+
+# NOTE: "Match" doit être placé en fin de fichier s'il est utilisé.
 ```
 
-**Explication terrain** :  
-- `PasswordAuthentication no` → empêche les attaques par force brute.  
-- `PubkeyAuthentication yes` → authentification uniquement par clé publique.  
-- `MaxAuthTries 3` → limite les tentatives de connexion.  
+Remarque importante : sshd ne fournit pas une directive unique pour *refuser* toutes les sources sauf un réseau. La méthode fiable pour n'accepter que des connexions depuis des hôtes précis (par exemple `192.168.1.100` et `192.168.1.101`) est d'appliquer des règles au pare-feu du serveur (UFW ou iptables). Vous pouvez, en complément, ajouter des contrôles avec un bloc `Match` si vous avez des besoins spécifiques, mais le pare-feu est recommandé pour bloquer l'accès réseau.
+
+Exemples de règles firewall :
+
+- Avec `ufw` (déployer sur les distributions qui utilisent UFW) :
+
+```bash
+# Autoriser seulement 2 hôtes spécifiques avec UFW :
+sudo ufw allow from 192.168.1.100 to any port 2272 proto tcp
+sudo ufw allow from 192.168.1.101 to any port 2272 proto tcp
+# Bloquer les autres adresses sur ce port (optionnel, selon règles UFW par défaut)
+sudo ufw deny proto tcp to any port 2272
+sudo ufw reload
+```
+
+Cette commande autorise exclusivement la plage `10.100.80.0/24` sur le port `2272`. Si vous n'utilisez pas UFW, utilisez `iptables` :
+
+- Avec `iptables` (exemple immédiat, à persister selon votre distribution) :
+
+```bash
+# Autoriser seulement 2 hôtes spécifiques avec iptables :
+sudo iptables -I INPUT -p tcp --dport 2272 -s 192.168.1.100 -j ACCEPT
+sudo iptables -I INPUT -p tcp --dport 2272 -s 192.168.1.101 -j ACCEPT
+# Refuser ensuite les autres connexions sur ce port
+sudo iptables -A INPUT -p tcp --dport 2272 -j DROP
+
+# Pour persister les règles sur Debian/Ubuntu :
+sudo apt-get install -y iptables-persistent
+sudo netfilter-persistent save
+```
+
+Vérifiez toujours, depuis une autre session, que vous pouvez toujours vous reconnecter avant de fermer votre session SSH administrateur ; en cas d'erreur, restaurez la sauvegarde :
+
+```bash
+sudo cp /etc/ssh/sshd_config.bak /etc/ssh/sshd_config
+sudo systemctl reload sshd
+```
+
+Après modification, testez la configuration et rechargez `sshd` :
+
+```bash
+sudo sshd -t
+sudo systemctl reload sshd
+```
+
+Si vous préférez une solution interne à `sshd`, vous pouvez ajouter un bloc `Match` en fin de fichier pour *adapter* le comportement selon l'adresse source, par exemple :
+
+```text
+# En fin de fichier :
+Match Address 192.168.1.100,192.168.1.101
+	# options spécifiques pour les clients de la plage
+	PasswordAuthentication no
+	PubkeyAuthentication yes
+```
+
+Mais attention : ce bloc ne bloque pas par lui-même les autres adresses — utilisez le pare-feu pour faire le filtrage réseau effectif.
+
 
 ---
 
-## 5. Mise en place de clés SSH
+## Schéma ASCII — Emplacement des clés (client Windows ↔ serveur Linux)
 
-### Générer une clé sur le client
-```bash
-ssh-keygen -t rsa -b 4096 -C "admin@pc"
-```
+Client Windows (votre PC)                     Serveur Linux (hôte distant)
 
-### Copier la clé sur le serveur
-```bash
-ssh-copy-id -p 2222 admin@192.168.1.10
-```
+C:\Users\cyberlitech\.ssh\                        /home/cyberlitech/.ssh/
 
-### Connexion sans mot de passe
-```bash
-ssh -p 2222 admin@192.168.1.10
-```
+	+---------------------------+                 +---------------------------+
+	| id_ed25519                |                 | (aucune clé privée ici)   |
+	| (private key)             |                 |                           |
+	+---------------------------+                 | authorized_keys (pub)     |
+	| id_ed25519.pub            |  --copiée-->    |  contient la clé publique |
+	+---------------------------+                 +---------------------------+
 
----
-
-## 6. Sécurisation supplémentaire
-
-- **Fail2ban (bloquer les IP malveillantes)**
-  ```bash
-  sudo apt install fail2ban
-  ```
-
-- **Firewall UFW**
-  ```bash
-  sudo ufw allow 2222/tcp
-  sudo ufw enable
-  ```
+Explication :
+- La clé privée (`id_ed25519`) reste sur le client Windows et n'est jamais transférée.
+- La clé publique (`id_ed25519.pub`) est copiée dans `/home/cyberlitech/.ssh/authorized_keys` sur le serveur.
+- L'agent SSH sur Windows stocke la clé privée en mémoire pour éviter de ressaisir la passphrase à chaque connexion.
 
 ---
 
-# Chapitre 2 — Utilisation pratique de SSH et SCP
+## Remarques de sécurité
 
-## 1. Connexion à un serveur
-```bash
-ssh admin@192.168.1.10
-```
-
----
-
-## 2. Exécuter une commande distante
-```bash
-ssh admin@192.168.1.10 "uptime"
-```
+- Ne partagez jamais votre clé privée.
+- La passphrase protège la clé privée sur le disque ; l'agent permet une saisie unique par session.
+- Générer la paire sur le client et copier uniquement la clé publique est la bonne pratique.
 
 ---
 
-## 3. Transfert de fichiers avec SCP
+Fichier créé pour usage pédagogique. Remplacez l'exemple de passphrase par une phrase secrète unique en environnement réel.
 
-### Local → Distant
-```bash
-scp fichier.txt admin@192.168.1.10:/home/admin/
-```
-
-### Distant → Local
-```bash
-scp admin@192.168.1.10:/home/admin/log.txt ./log.txt
-```
-
-### Copier un dossier
-```bash
-scp -r sauvegarde/ admin@192.168.1.10:/home/admin/backups/
-```
-
----
-
-## 4. Synchronisation avec Rsync
-```bash
-rsync -avz projet/ admin@192.168.1.10:/home/admin/projets/
-```
-
----
-
-## 5. Tunnel SSH
-Rediriger un port local vers un service distant :
-```bash
-ssh -L 8080:localhost:80 admin@192.168.1.10
-```
-👉 Permet d’accéder au port 80 du serveur via `http://localhost:8080`
-
----
-
-## 6. Utilisation d’une clé privée
-```bash
-ssh -i ~/.ssh/id_rsa admin@192.168.1.10
-```
-
----
-
-# Récapitulatif des commandes
-
-| Action | Commande | Exemple |
-|--------|----------|---------|
-| Connexion simple | `ssh user@ip` | `ssh admin@192.168.1.10` |
-| Connexion avec port | `ssh -p port user@ip` | `ssh -p 2222 admin@192.168.1.10` |
-| Commande distante | `ssh user@ip "cmd"` | `ssh admin@192.168.1.10 "uptime"` |
-| Copier fichier local → distant | `scp fichier user@ip:/path/` | `scp notes.txt admin@192.168.1.10:/home/admin/` |
-| Copier fichier distant → local | `scp user@ip:/fichier /local/` | `scp admin@192.168.1.10:/home/admin/log.txt ./` |
-| Copier dossier | `scp -r dossier user@ip:/path/` | `scp -r sauvegarde/ admin@192.168.1.10:/home/admin/backups/` |
-| Synchroniser | `rsync -avz src user@ip:/path/` | `rsync -avz /var/www/ admin@192.168.1.10:/home/admin/www/` |
-| Tunnel SSH | `ssh -L port_local:localhost:port_distant user@ip` | `ssh -L 8080:localhost:80 admin@192.168.1.10` |
-| Copier clé publique | `ssh-copy-id user@ip` | `ssh-copy-id admin@192.168.1.10` |
-
----
-
-# ✅ Conclusion
-
-- **Chapitre 1** : Installation, configuration et sécurisation du serveur SSH.  
-- **Chapitre 2** : Utilisation pratique (connexion, transferts, tunnels, automatisation).  
-
-👉 Avec cette base, un administrateur système peut :  
-- Gérer ses serveurs Linux à distance en toute sécurité.  
-- Automatiser des transferts et synchronisations fiables.  
-- Mettre en place un SSH renforcé contre les attaques courantes.  
 
 ---
 
