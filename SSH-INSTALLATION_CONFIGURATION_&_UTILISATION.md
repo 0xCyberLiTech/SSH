@@ -62,7 +62,7 @@ Le contenu est structuré, accessible et optimisé SEO pour répondre aux besoin
 
 ---
 
-# Connexion SSH — Windows (PowerShell) → Serveur Linux
+# Connexion SSH - Windows (PowerShell) → Serveur Linux
 
 But : Générer une paire ed25519 sur le client Windows, charger la clé privée dans l'agent (passphrase saisie une seule fois), copier la clé publique sur le serveur et tester la connexion.
 
