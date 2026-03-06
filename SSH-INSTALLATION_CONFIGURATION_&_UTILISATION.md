@@ -92,7 +92,11 @@ Ouvrez PowerShell en Administrateur puis exécutez :
 
 ```powershell
 Set-Service -Name ssh-agent -StartupType Automatic
+```
+```powershell
 Start-Service ssh-agent
+```
+```powershell
 Get-Service ssh-agent
 ```
 
@@ -111,6 +115,8 @@ Après démarrage du service (ou dans Git Bash / Pageant selon l'alternative) :
 
 ```powershell
 ssh-add $env:USERPROFILE\.ssh\id_ed25519
+```
+```powershell
 ssh-add -l
 ```
 
@@ -146,7 +152,11 @@ Sur le serveur, corrigez permissions et propriétaire :
 
 ```bash
 chmod 700 ~/.ssh
+```
+```bash
 chmod 600 ~/.ssh/authorized_keys
+```
+```bash
 chown -R cyberlitech:cyberlitech ~/.ssh
 ```
 
@@ -154,6 +164,8 @@ Vérifiez `sshd_config` (root) et rechargez si nécessaire :
 
 ```bash
 sudo nano /etc/ssh/sshd_config   # vérifier PubkeyAuthentication yes, PasswordAuthentication no si souhaité
+```
+```bash
 sudo systemctl reload sshd
 ```
 
@@ -163,6 +175,8 @@ Avant de remplacer ou vider `/etc/ssh/sshd_config`, sauvegardez le fichier exist
 
 ```bash
 sudo cp /etc/ssh/sshd_config /etc/ssh/sshd_config.bak
+```
+```bash
 sudo sshd -t
 ```
 
@@ -202,12 +216,21 @@ Exemples de règles firewall :
 
 - Avec `ufw` (déployer sur les distributions qui utilisent UFW) :
 
-```bash
 # Autoriser seulement 2 hôtes spécifiques avec UFW :
+
+```bash
 sudo ufw allow from 192.168.1.100 to any port 2272 proto tcp
+```
+```bash
 sudo ufw allow from 192.168.1.101 to any port 2272 proto tcp
+```
+
 # Bloquer les autres adresses sur ce port (optionnel, selon règles UFW par défaut)
+
+```bash
 sudo ufw deny proto tcp to any port 2272
+```
+```bash
 sudo ufw reload
 ```
 
@@ -215,15 +238,25 @@ Cette commande autorise exclusivement la plage `10.100.80.0/24` sur le port `227
 
 - Avec `iptables` (exemple immédiat, à persister selon votre distribution) :
 
-```bash
 # Autoriser seulement 2 hôtes spécifiques avec iptables :
+
+```bash
 sudo iptables -I INPUT -p tcp --dport 2272 -s 192.168.1.100 -j ACCEPT
 sudo iptables -I INPUT -p tcp --dport 2272 -s 192.168.1.101 -j ACCEPT
+```
+
 # Refuser ensuite les autres connexions sur ce port
+
+```bash
 sudo iptables -A INPUT -p tcp --dport 2272 -j DROP
+```
 
 # Pour persister les règles sur Debian/Ubuntu :
+
+```bash
 sudo apt-get install -y iptables-persistent
+```
+```bash
 sudo netfilter-persistent save
 ```
 
@@ -231,6 +264,8 @@ Vérifiez toujours, depuis une autre session, que vous pouvez toujours vous reco
 
 ```bash
 sudo cp /etc/ssh/sshd_config.bak /etc/ssh/sshd_config
+```
+```bash
 sudo systemctl reload sshd
 ```
 
@@ -238,13 +273,16 @@ Après modification, testez la configuration et rechargez `sshd` :
 
 ```bash
 sudo sshd -t
+```
+```bash
 sudo systemctl reload sshd
 ```
 
 Si vous préférez une solution interne à `sshd`, vous pouvez ajouter un bloc `Match` en fin de fichier pour *adapter* le comportement selon l'adresse source, par exemple :
 
-```text
 # En fin de fichier :
+
+```text
 Match Address 192.168.1.100,192.168.1.101
 	# options spécifiques pour les clients de la plage
 	PasswordAuthentication no
@@ -252,7 +290,6 @@ Match Address 192.168.1.100,192.168.1.101
 ```
 
 Mais attention : ce bloc ne bloque pas par lui-même les autres adresses — utilisez le pare-feu pour faire le filtrage réseau effectif.
-
 
 ---
 
