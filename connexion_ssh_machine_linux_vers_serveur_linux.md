@@ -64,8 +64,8 @@ Le contenu est structuré, accessible et optimisé SEO pour répondre aux besoin
 
 # Connexion SSH depuis une machine linux (Debian) vers un serveur linux (Debian).
 
-machine linux local 10.10.10.101
-serveur linux distant 10.10.10.102
+- machine linux local 10.10.10.101
+- serveur linux distant 10.10.10.102
 
 Pour commencer, nous allons générer une paire de clés SSH à l’aide de la commande ssh-keygen.
 
