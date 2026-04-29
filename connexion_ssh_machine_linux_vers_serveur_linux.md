@@ -67,7 +67,7 @@ Le contenu est structuré, accessible et optimisé SEO pour répondre aux besoin
 - machine linux local 10.10.10.101
 - serveur linux distant 10.10.10.102
 
-Pour commencer, nous allons générer une paire de clés SSH à l’aide de la commande ssh-keygen.
+Pour commencer, nous allons générer une paire de clés SSH à l’aide de la commande ssh-keygen depuis la machine locale.
 
 Effectuez cette opération depuis la machine (Linux Debian) qui servira à se connecter à votre serveur distant (également sous Linux Debian) :
 
