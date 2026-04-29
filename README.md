@@ -79,6 +79,7 @@ Le contenu est structuré, accessible et optimisé SEO pour répondre aux besoin
 | Catégorie | Sujet                              | Accès Rapide                                                                                                                                                |
 |-----------|------------------------------------|-------------------------------------------------------------------------------------------------------------------------------------------------------------|
 | **SSH**   | Connexion SSH — Windows (PowerShell) → Serveur Linux. | [<img src="https://img.shields.io/badge/EXPLORER-4CAF50?style=for-the-badge&logo=github&logoColor=white">](SSH-INSTALLATION_CONFIGURATION_&_UTILISATION.md) |
+| **SSH**   | Connexion SSH — Machine Linux (Debian) → Serveur Linux (DEBIAN). | [<img src="https://img.shields.io/badge/EXPLORER-4CAF50?style=for-the-badge&logo=github&logoColor=white">]() |
 
 </div>
 
