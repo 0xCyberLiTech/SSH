@@ -62,86 +62,110 @@ Le contenu est structuré, accessible et optimisé SEO pour répondre aux besoin
 
 ---
 
+# Pôle Cyber
+Fait le 28-04-2026
+
 # Générer une paire de clés SSH sous Linux
 
-*Pôle Cyber – Fait le 28-04-2026*
+machine linux local 10.10.10.101
+serveur linux distant 10.10.10.102
 
-## 1. Génération de la paire de clés SSH
+Pour commencer, nous allons générer une paire de clés SSH à l’aide de la commande ssh-keygen.
 
-**Machine locale (Linux Debian) :** 10.10.10.101  
-**Serveur distant (Linux Debian) :** 10.10.10.102
-
-Pour générer une paire de clés SSH :
+Effectuez cette opération depuis la machine (Linux Debian) qui servira à se connecter à votre serveur distant (également sous Linux Debian) :
 
 ```bash
 ssh-keygen
 ```
 
-Par défaut, une clé RSA de 2048 bits est créée. Pour une clé de taille différente :
+Si aucune option n’est spécifiée, une clé RSA de 2048 bits sera créée, ce qui reste acceptable aujourd’hui en termes de sécurité.
+
+Pour générer une clé de taille différente, utilisez l’option -b :
 
 ```bash
 ssh-keygen -b 4096
 ```
 
-L’utilitaire vous demandera où enregistrer la clé (par défaut : `~/.ssh/id_rsa`).
+Generating public/private rsa key pair.
+Enter file in which to save the key (/home/username/.ssh/id_rsa):
 
-- Pour root : `/root/.ssh`
-- Pour un utilisateur : `/username/.ssh`
+L’utilitaire vous demandera de sélectionner un emplacement pour les clés qui seront générées.
 
-Il est conseillé de garder l’emplacement par défaut.
+Le système stockera les clés par défaut dans le répertoire ~/.ssh du répertoire d’accueil de votre utilisateur. La clé privée se nommera id_rsa et la clé publique associée, id_rsa.pub.
 
-Si une clé existe déjà :
+/root/.ssh pour l’utilisateur root).
+
+ou
+
+/username/.ssh pour l’utilisateur username).
+
+En règle générale, à ce stade, il est préférable de conserver l’emplacement par défaut. Cela permettra à votre client SSH de trouver automatiquement vos clés SSH lorsqu’il voudra s’authentifier. Si vous souhaitez choisir un autre chemin, vous devez le saisir maintenant. Sinon, appuyez sur ENTER pour accepter l’emplacement par défaut.
+
+Si vous avez précédemment généré une paire de clés SSH, vous verrez apparaître une invite similaire à la suivante :
 
 ```
 /home/username/.ssh/id_rsa already exists.
 Overwrite (y/n)?
 ```
 
-Attention : écraser la clé supprimera l’ancienne (action irréversible).
+Si vous choisissez d’écraser la clé sur le disque, vous ne pourrez plus vous authentifier à l’aide de la clé précédente. Soyez très prudent lorsque vous sélectionnez « yes », car il s’agit d’un processus de suppression irréversible.
 
-Vous pouvez ensuite définir une phrase de passe (optionnelle) pour protéger la clé privée.
+Created directory '/home/username/.ssh'.
+Enter passphrase (empty for no passphrase):
+Enter same passphrase again:
 
-### Avantages d’une phrase de passe :
-- La clé privée n’est jamais exposée sur le réseau.
-- La phrase de passe protège la clé sur la machine locale.
-- Les droits d’accès restreints protègent la clé.
-- Un attaquant doit déjà avoir accès à votre compte pour tenter de casser la phrase de passe.
-- La phrase de passe offre une protection supplémentaire en cas de compromission.
+Vous serez ensuite invité à saisir une phrase de passe pour la clé. Il s’agit d’une phrase de passe facultative qui peut servir à crypter le fichier de la clé privée sur le disque.
 
-Si vous ne souhaitez pas de phrase de passe, appuyez sur ENTER.
+Il serait légitime de vous demander quels avantages pourrait avoir une clé SSH si vous devez tout de même saisir une phrase de passe.
 
-Après création, les clés sont dans `~/.ssh` :
-- `id_xxx` : clé privée
-- `id_xxx.pub` : clé publique
+Voici quelques-uns des avantages :
 
-Pour vérifier :
+La clé SSH privée (la partie qui peut être protégée par une phrase de passe) n’est jamais exposée sur le réseau. La phrase de passe sert uniquement à décrypter la clé sur la machine locale. Cela signifie que toute attaque par force brute du réseau sera impossible avec une phrase de passe.
+
+La clé privée est conservée dans un répertoire à accès restreint. Le client SSH ne pourra pas reconnaître des clés privées qui ne sont pas conservées dans des répertoires à accès restreint. La clé elle-même doit également être configurée avec des autorisations restreintes (lecture et écriture uniquement disponibles pour le propriétaire). Cela signifie que les autres utilisateurs du système ne peuvent pas vous espionner.
+
+Tout attaquant souhaitant craquer la phrase de passe de la clé SSH privée devra préalablement avoir accès au système. Ce qui signifie qu’il aura déjà accès à votre compte utilisateur ou le compte root. Dans ce genre de situation, la phrase de passe peut empêcher l’attaquant de se connecter immédiatement à vos autres serveurs, en espérant que cela vous donne du temps pour créer et implémenter une nouvelle paire de clés SSH et supprimer l’accès de la clé compromise.
+
+Étant donné que la clé privée n’est jamais exposée au réseau et est protégée par des autorisations d’accès au fichier, ce fichier ne doit jamais être accessible à toute autre personne que vous (et le root user). La phrase de passe offre une couche de protection supplémentaire dans le cas où ces conditions seraient compromises.
+
+L’ajout d’une phrase de passe est facultatif. Si vous en entrez une, vous devrez la saisir à chaque fois que vous utiliserez cette clé (à moins que vous utilisiez un logiciel d’agent SSH qui stocke la clé décryptée). Nous vous recommandons d’utiliser une phrase de passe. Cependant, si vous ne souhaitez pas définir une phrase de passe, il vous suffit d’appuyer sur ENTER pour contourner cette invite.
+
+Après la création, vous trouverez vos clés dans le répertoire ~/.ssh :
+
+~/.ssh/id_xxx : votre clé privée
+~/.ssh/id_xxx.pub : votre clé publique
+
+Pour vérifier la présence des fichiers :
 
 ```bash
-cd ~/.ssh
-ls
+cd ~/.ssh
+ls 
 id_ed25519
 id_ed25519.pub
 ```
 
-## 2. Transférer la clé publique vers le serveur distant
+Transférer la clé publique vers le serveur distant
+Transférez maintenant la clé publique (id_ed25519.pub) vers votre serveur distant, depuis votre machine locale.
 
-Depuis la machine locale, transférez la clé publique :
+Exemple avec l’IP du serveur distant : 10.10.10.102 :
 
 ```bash
 ssh-copy-id -i ~/.ssh/id_ed25519.pub -p 2272 root@10.10.10.102
 ```
 
-Une authentification sera demandée. La clé sera copiée dans `~/.ssh/authorized_keys` sur le serveur distant.
+Une authentification vous sera demandée.
 
-## 3. Vérifier et sécuriser les droits d’accès
+Cette commande va copier votre clé publique sur le serveur distant, dans le fichier authorized_keys du dossier ~/.ssh de la session distante (ici, root).
 
-Connectez-vous en SSH :
+Vérifier et sécuriser les droits d’accès
+
+Connectez-vous ensuite en SSH au serveur distant :
 
 ```bash
-ssh -p 2272 root@10.10.10.102
+ssh -p 2272 root@10.10.10.102
 ```
 
-Sécurisez les droits :
+Sécurisez le dossier ~/.ssh/ et le fichier authorized_keys :
 
 ```bash
 cd /root/
@@ -150,24 +174,29 @@ cd /root/.ssh/
 chmod 600 authorized_keys
 ```
 
-Redémarrez le service SSH :
+Redémarrez le service SSH :
 
 ```bash
-systemctl restart ssh.service
+systemctl restart ssh.service
 ```
 
-Vous pouvez maintenant vous connecter sans mot de passe :
+Vous pouvez désormais vous connecter depuis la machine locale vers le serveur distant en utilisant cette clé publique :
 
 ```bash
 ssh -p 2272 root@10.10.10.102
 ```
 
-## 4. Modifier la configuration SSH
+L’authentification est maintenant transparente grâce à la clé publique déposée au préalable.
 
-Pour renforcer la sécurité, modifiez `/etc/ssh/sshd_config` :
+Modifier la configuration SSH
+
+Il est recommandé de modifier la configuration du fichier /etc/ssh/sshd_config pour renforcer la sécurité.
+
+Exemple de configuration à adapter (notamment le port si besoin) :
 
 ```conf
 # Authentication:
+
 LoginGraceTime 1m
 #PermitRootLogin prohibit-password
 PermitRootLogin yes
@@ -177,11 +206,11 @@ MaxSessions 2
 
 PubkeyAuthentication yes
 
-# Pour désactiver l’authentification par mot de passe :
+# To disable tunneled clear text passwords, change to "no" here!
 PasswordAuthentication no
-```
 
-> **Attention** : Avec `PasswordAuthentication no`, la connexion SSH par mot de passe est désactivée.
+PasswordAuthentication no # Vous ne pourrez plus vous connecter en ssh via votre login et password
+```
 
 ---
 
