@@ -62,10 +62,7 @@ Le contenu est structuré, accessible et optimisé SEO pour répondre aux besoin
 
 ---
 
-# Pôle Cyber
-Fait le 28-04-2026
-
-# Générer une paire de clés SSH sous Linux
+# Connexion SSH depuis une machine linux (Debian) vers un serveur linux (Debian).
 
 machine linux local 10.10.10.101
 serveur linux distant 10.10.10.102
