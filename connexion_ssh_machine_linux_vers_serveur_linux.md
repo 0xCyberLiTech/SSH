@@ -62,7 +62,126 @@ Le contenu est structuré, accessible et optimisé SEO pour répondre aux besoin
 
 ---
 
+# Générer une paire de clés SSH sous Linux
 
+*Pôle Cyber – Fait le 28-04-2026*
+
+## 1. Génération de la paire de clés SSH
+
+**Machine locale (Linux Debian) :** 10.10.10.101  
+**Serveur distant (Linux Debian) :** 10.10.10.102
+
+Pour générer une paire de clés SSH :
+
+```bash
+ssh-keygen
+```
+
+Par défaut, une clé RSA de 2048 bits est créée. Pour une clé de taille différente :
+
+```bash
+ssh-keygen -b 4096
+```
+
+L’utilitaire vous demandera où enregistrer la clé (par défaut : `~/.ssh/id_rsa`).
+
+- Pour root : `/root/.ssh`
+- Pour un utilisateur : `/username/.ssh`
+
+Il est conseillé de garder l’emplacement par défaut.
+
+Si une clé existe déjà :
+
+```
+/home/username/.ssh/id_rsa already exists.
+Overwrite (y/n)?
+```
+
+Attention : écraser la clé supprimera l’ancienne (action irréversible).
+
+Vous pouvez ensuite définir une phrase de passe (optionnelle) pour protéger la clé privée.
+
+### Avantages d’une phrase de passe :
+- La clé privée n’est jamais exposée sur le réseau.
+- La phrase de passe protège la clé sur la machine locale.
+- Les droits d’accès restreints protègent la clé.
+- Un attaquant doit déjà avoir accès à votre compte pour tenter de casser la phrase de passe.
+- La phrase de passe offre une protection supplémentaire en cas de compromission.
+
+Si vous ne souhaitez pas de phrase de passe, appuyez sur ENTER.
+
+Après création, les clés sont dans `~/.ssh` :
+- `id_xxx` : clé privée
+- `id_xxx.pub` : clé publique
+
+Pour vérifier :
+
+```bash
+cd ~/.ssh
+ls
+id_ed25519
+id_ed25519.pub
+```
+
+## 2. Transférer la clé publique vers le serveur distant
+
+Depuis la machine locale, transférez la clé publique :
+
+```bash
+ssh-copy-id -i ~/.ssh/id_ed25519.pub -p 2272 root@10.10.10.102
+```
+
+Une authentification sera demandée. La clé sera copiée dans `~/.ssh/authorized_keys` sur le serveur distant.
+
+## 3. Vérifier et sécuriser les droits d’accès
+
+Connectez-vous en SSH :
+
+```bash
+ssh -p 2272 root@10.10.10.102
+```
+
+Sécurisez les droits :
+
+```bash
+cd /root/
+chmod 700 .ssh/
+cd /root/.ssh/
+chmod 600 authorized_keys
+```
+
+Redémarrez le service SSH :
+
+```bash
+systemctl restart ssh.service
+```
+
+Vous pouvez maintenant vous connecter sans mot de passe :
+
+```bash
+ssh -p 2272 root@10.10.10.102
+```
+
+## 4. Modifier la configuration SSH
+
+Pour renforcer la sécurité, modifiez `/etc/ssh/sshd_config` :
+
+```conf
+# Authentication:
+LoginGraceTime 1m
+#PermitRootLogin prohibit-password
+PermitRootLogin yes
+#StrictModes yes
+MaxAuthTries 4
+MaxSessions 2
+
+PubkeyAuthentication yes
+
+# Pour désactiver l’authentification par mot de passe :
+PasswordAuthentication no
+```
+
+> **Attention** : Avec `PasswordAuthentication no`, la connexion SSH par mot de passe est désactivée.
 
 ---
 
