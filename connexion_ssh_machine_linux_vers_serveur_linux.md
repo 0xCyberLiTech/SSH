@@ -136,7 +136,11 @@ Pour vérifier la présence des fichiers :
 
 ```bash
 cd ~/.ssh
-ls 
+```
+```bash
+ls
+```
+```bash
 id_ed25519
 id_ed25519.pub
 ```
@@ -166,8 +170,14 @@ Sécurisez le dossier ~/.ssh/ et le fichier authorized_keys :
 
 ```bash
 cd /root/
+```
+```bash
 chmod 700 .ssh/
+```
+```bash
 cd /root/.ssh/
+```
+```bash
 chmod 600 authorized_keys
 ```
 
