@@ -63,18 +63,6 @@ Le contenu est structuré, accessible et optimisé SEO pour répondre aux besoin
 ---
 
 
----
-
-## Remarques de sécurité
-
-- Ne partagez jamais votre clé privée.
-- La passphrase protège la clé privée sur le disque ; l'agent permet une saisie unique par session.
-- Générer la paire sur le client et copier uniquement la clé publique est la bonne pratique.
-
----
-
-Fichier créé pour usage pédagogique. Remplacez l'exemple de passphrase par une phrase secrète unique en environnement réel.
-
 
 ---
 
